@@ -1,5 +1,4 @@
 export type TCreateMarineParams = {
-  ownerId: string;
   name: string;
   rank: string;
   stats: {

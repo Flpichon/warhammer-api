@@ -11,7 +11,11 @@ export class MarinesService {
     private readonly marineModel: Model<MarineDocument>,
   ) {}
 
-  async create(params: TCreateMarineParams, squadId: string): Promise<Marine> {
+  async create(
+    params: TCreateMarineParams,
+    squadId: string,
+    ownerId: string,
+  ): Promise<Marine> {
     try {
       const created = await this.marineModel.create({
         name: params.name.trim(),
@@ -23,7 +27,7 @@ export class MarinesService {
           def: params.stats.def,
         },
         squadId,
-        ownerId: params.ownerId,
+        ownerId,
       });
       return created;
     } catch (err: any) {
