@@ -2,6 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Battle } from './schemas/battle.schema';
+import { CreateBattleParams } from './battles.types';
 
 @Injectable()
 export class BattlesService {
@@ -10,17 +11,15 @@ export class BattlesService {
     private readonly battleModel: Model<Battle>,
   ) {}
 
-  async create(params: {
-    ownerId: string;
-    squadId: string;
-    enemy: { type: string; power: number };
-    log: string[];
-    result: string;
-  }): Promise<Battle> {
+  async create(
+    params: CreateBattleParams,
+    ownerId: string,
+    squadId: string,
+  ): Promise<Battle> {
     try {
       const created = await this.battleModel.create({
-        ownerId: params.ownerId,
-        squadId: params.squadId,
+        ownerId,
+        squadId,
         enemy: {
           type: params.enemy.type,
           power: params.enemy.power,

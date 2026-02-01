@@ -2,6 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Squad, SquadDocument } from './schemas/squad.schema';
+import { CreateSquadParams } from './squads.types';
 
 @Injectable()
 export class SquadsService {
@@ -9,16 +10,12 @@ export class SquadsService {
     @InjectModel(Squad.name)
     private readonly squadModel: Model<SquadDocument>,
   ) {}
-  async create(params: {
-    name: string;
-    chapter: string;
-    ownerId: string;
-  }): Promise<Squad> {
+  async create(params: CreateSquadParams, ownerId: string): Promise<Squad> {
     try {
       const created = await this.squadModel.create({
         name: params.name.trim(),
         chapter: params.chapter.trim(),
-        ownerId: params.ownerId,
+        ownerId,
       });
       return created;
     } catch (err: any) {

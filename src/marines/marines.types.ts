@@ -1,19 +1,38 @@
-export type TCreateMarineParams = {
+export type MarineStats = {
+  hp: number;
+  atk: number;
+  def: number;
+};
+
+export type CreateMarineParams = {
+  ownerId: string;
   name: string;
   rank: string;
-  stats: {
-    hp: number;
-    atk: number;
-    def: number;
-  };
+  stats: MarineStats;
+  squadId?: string;
 };
 
-export type TUpdateMarineParams = Partial<TCreateMarineParams> & {
-  // utile ? (MEMO @FLP)
-  marineId: string;
+export type FindMarineByIdParams = {
+  ownerId: string;
+  id: string;
 };
 
-export type TAssignMarineToSquadParams = {
-  marineId: string;
-  squadId: string;
+export type FindMarinesParams = {
+  ownerId: string;
+  rank?: string;
+  squadId?: string;
+};
+
+export type UpdateMarineParams = {
+  ownerId: string;
+  id: string;
+  name?: string;
+  rank?: string;
+  stats?: MarineStats;
+  squadId?: string;
+};
+
+export type RemoveMarineParams = {
+  ownerId: string;
+  id: string;
 };

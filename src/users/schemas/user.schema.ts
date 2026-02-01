@@ -11,4 +11,3 @@ export class User {
 }
 export const UserSchema = SchemaFactory.createForClass(User);
 applyBaseSchemaTransforms(UserSchema, { omit: ['passwordHash'] });
-UserSchema.index({ email: 1 }, { unique: true });

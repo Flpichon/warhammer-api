@@ -5,21 +5,25 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { Trim } from '../../common/dto/transforms';
 import { MarineStatsDto } from './marine-stats.dto';
 
 export class UpdateMarineDto {
   @IsOptional()
   @IsString()
   @MinLength(1)
+  @Trim()
   name?: string;
 
   @IsOptional()
   @IsString()
   @MinLength(1)
+  @Trim()
   rank?: string;
 
   @IsOptional()
   @IsString()
+  @Trim()
   squadId?: string;
 
   @IsOptional()

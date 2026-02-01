@@ -6,15 +6,18 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { Trim } from '../../common/dto/transforms';
 import { MarineStatsDto } from './marine-stats.dto';
 
 export class CreateMarineDto {
   @IsString()
   @MinLength(1)
+  @Trim()
   declare name: string;
 
   @IsString()
   @MinLength(1)
+  @Trim()
   declare rank: string;
 
   @IsOptional()
