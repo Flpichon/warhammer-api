@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/user.service';
-import type { JwtPayload } from './auth.types';
+import type { AuthTokenResponse, JwtPayload } from './auth.types';
 
 export interface IAuthResponse extends JwtPayload {
   accessToken: string;
@@ -18,43 +18,46 @@ export class AuthService {
   async register(params: {
     email: string;
     password: string;
-  }): Promise<IAuthResponse> {
+  }): Promise<AuthTokenResponse> {
     const passwordHash = await bcrypt.hash(params.password, 10);
-    const created = await this.usersService.createAuth({
+    const { auth, user } = await this.usersService.createForAuth({
       email: params.email,
       passwordHash,
     });
 
     const payload: JwtPayload = {
-      sub: created.id,
-      email: created.email,
+      sub: auth.id,
+      email: auth.email,
     };
     const accessToken = await this.jwtService.signAsync(payload);
-    return { accessToken, ...payload };
+    return { accessToken, user };
   }
 
   async login(params: {
     email: string;
     password: string;
-  }): Promise<IAuthResponse> {
-    const user = await this.usersService.findAuthByEmail({
+  }): Promise<AuthTokenResponse> {
+    const found = await this.usersService.findForAuthByEmail({
       email: params.email,
     });
-    if (!user) {
+    if (!found) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const passwordOk = await bcrypt.compare(params.password, user.passwordHash);
+    const passwordOk = await bcrypt.compare(
+      params.password,
+      found.auth.passwordHash,
+    );
     if (!passwordOk) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const payload: JwtPayload = {
-      sub: user.id,
-      email: user.email,
+      sub: found.auth.id,
+      email: found.auth.email,
     };
 
     const accessToken = await this.jwtService.signAsync(payload);
-    return { accessToken, ...payload };
+    return { accessToken, user: found.user };
   }
 }

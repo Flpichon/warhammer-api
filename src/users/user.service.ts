@@ -5,7 +5,6 @@ import { User, UserDocument } from './schemas/user.schema';
 import {
   CreateUserParams,
   FindUserByEmailParams,
-  FindUserByIdParams,
   UserAuth,
   UserResponse,
 } from './users.types';
@@ -17,14 +16,17 @@ export class UsersService {
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
   ) {}
-  async createAuth(params: CreateUserParams): Promise<UserAuth> {
+
+  async createForAuth(
+    params: CreateUserParams,
+  ): Promise<{ auth: UserAuth; user: UserResponse }> {
     const email = params.email.trim().toLowerCase();
     try {
       const created = await this.userModel.create({
         email,
         passwordHash: params.passwordHash,
       });
-      return toUserAuth(created);
+      return { auth: toUserAuth(created), user: toUserResponse(created) };
     } catch (err: any) {
       const code = (err as { code?: number })?.code;
       if (code === 11000) {
@@ -33,20 +35,14 @@ export class UsersService {
       throw err;
     }
   }
-  async findAuthByEmail(
+  async findForAuthByEmail(
     params: FindUserByEmailParams,
-  ): Promise<UserAuth | null> {
+  ): Promise<{ auth: UserAuth; user: UserResponse } | null> {
     const email = params.email.trim().toLowerCase();
     const doc = await this.userModel
       .findOne({ email })
       .select('+passwordHash')
       .exec();
-    return doc ? toUserAuth(doc) : null;
-  }
-  async findPublicById(
-    params: FindUserByIdParams,
-  ): Promise<UserResponse | null> {
-    const doc = await this.userModel.findById(params.id).exec();
-    return doc ? toUserResponse(doc) : null;
+    return doc ? { auth: toUserAuth(doc), user: toUserResponse(doc) } : null;
   }
 }
