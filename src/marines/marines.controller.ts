@@ -1,32 +1,29 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
-  Headers,
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { MarinesService } from './marines.service';
 import { CreateMarineDto } from './dto/create-marine.dto';
 import { UpdateMarineDto } from './dto/update-marine.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CurrentUser } from '../auth/current-user.decorator';
+import type { JwtPayload } from '../auth/auth.types';
 
 @Controller('marines')
+@UseGuards(JwtAuthGuard)
 export class MarinesController {
   constructor(private readonly marinesService: MarinesService) {}
 
   @Post()
-  create(
-    @Body() dto: CreateMarineDto,
-    @Headers('x-owner-id') ownerId?: string, // degueu pour l'instant mais on changera ça plus tard (MEMO @FLP)
-  ) {
-    if (!ownerId) {
-      throw new BadRequestException('ownerId header is required');
-    }
+  create(@Body() dto: CreateMarineDto, @CurrentUser() user: JwtPayload) {
     return this.marinesService.create({
-      ownerId,
+      ownerId: user.sub,
       name: dto.name,
       rank: dto.rank,
       stats: dto.stats,
@@ -34,31 +31,21 @@ export class MarinesController {
     });
   }
   @Get()
-  findAll(@Headers('x-owner-id') ownerId?: string) {
-    if (!ownerId) {
-      throw new BadRequestException('Missing x-owner-id header');
-    }
-    return this.marinesService.findAll({ ownerId });
+  findAll(@CurrentUser() user: JwtPayload) {
+    return this.marinesService.findAll({ ownerId: user.sub });
   }
   @Get(':id')
-  findOne(@Param('id') id: string, @Headers('x-owner-id') ownerId?: string) {
-    if (!ownerId) {
-      throw new BadRequestException('Missing x-owner-id header');
-    }
-    return this.marinesService.findById({ id, ownerId });
+  findOne(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.marinesService.findById({ id, ownerId: user.sub });
   }
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() dto: UpdateMarineDto,
-    @Headers('x-owner-id') ownerId?: string,
+    @CurrentUser() user: JwtPayload,
   ) {
-    if (!ownerId) {
-      throw new BadRequestException('Missing x-owner-id header');
-    }
-
     return this.marinesService.update({
-      ownerId,
+      ownerId: user.sub,
       id,
       name: dto.name,
       rank: dto.rank,
@@ -67,10 +54,7 @@ export class MarinesController {
     });
   }
   @Delete(':id')
-  remove(@Param('id') id: string, @Headers('x-owner-id') ownerId?: string) {
-    if (!ownerId) {
-      throw new BadRequestException('Missing x-owner-id header');
-    }
-    return this.marinesService.remove({ ownerId, id });
+  remove(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.marinesService.remove({ ownerId: user.sub, id });
   }
 }

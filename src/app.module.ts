@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { SquadsModule } from './squads/squads.module';
 import { MarinesModule } from './marines/marines.module';
 import { BattlesModule } from './battles/battles.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { BattlesModule } from './battles/battles.module';
       }),
     }),
     UsersModule,
+    AuthModule,
     SquadsModule,
     MarinesModule,
     BattlesModule,

@@ -10,3 +10,16 @@ export type FindUserByEmailParams = {
 export type FindUserByIdParams = {
   id: string;
 };
+
+export type UserAuth = {
+  id: string;
+  email: string;
+  passwordHash: string;
+};
+
+export type UserResponse = {
+  id: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
+};

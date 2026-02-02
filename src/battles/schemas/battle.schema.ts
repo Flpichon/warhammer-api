@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { applyBaseSchemaTransforms } from 'src/common/mongoose/schema.transforms';
+import { applyBaseSchemaTransforms } from '../../common/mongoose/schema.transforms';
 export type BattleDocument = HydratedDocument<Battle>;
 @Schema({ _id: false })
 class BattleEnemy {

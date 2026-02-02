@@ -6,7 +6,10 @@ import {
   CreateUserParams,
   FindUserByEmailParams,
   FindUserByIdParams,
+  UserAuth,
+  UserResponse,
 } from './users.types';
+import { toUserAuth, toUserResponse } from './users.mapper';
 
 @Injectable()
 export class UsersService {
@@ -14,14 +17,14 @@ export class UsersService {
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
   ) {}
-  async create(params: CreateUserParams): Promise<User> {
+  async createAuth(params: CreateUserParams): Promise<UserAuth> {
     const email = params.email.trim().toLowerCase();
     try {
       const created = await this.userModel.create({
         email,
         passwordHash: params.passwordHash,
       });
-      return created;
+      return toUserAuth(created);
     } catch (err: any) {
       const code = (err as { code?: number })?.code;
       if (code === 11000) {
@@ -30,12 +33,20 @@ export class UsersService {
       throw err;
     }
   }
-  async findByEmail(params: FindUserByEmailParams): Promise<User | null> {
-    return this.userModel
-      .findOne({ email: params.email.trim().toLowerCase() })
+  async findAuthByEmail(
+    params: FindUserByEmailParams,
+  ): Promise<UserAuth | null> {
+    const email = params.email.trim().toLowerCase();
+    const doc = await this.userModel
+      .findOne({ email })
+      .select('+passwordHash')
       .exec();
+    return doc ? toUserAuth(doc) : null;
   }
-  async findById(params: FindUserByIdParams): Promise<User | null> {
-    return this.userModel.findById(params.id).exec();
+  async findPublicById(
+    params: FindUserByIdParams,
+  ): Promise<UserResponse | null> {
+    const doc = await this.userModel.findById(params.id).exec();
+    return doc ? toUserResponse(doc) : null;
   }
 }
