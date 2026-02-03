@@ -1,4 +1,4 @@
-import { UserResponse } from 'src/users/users.types';
+import { UserResponse } from '../users/users.types';
 
 export type JwtPayload = {
   sub: string;

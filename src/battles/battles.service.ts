@@ -1,6 +1,4 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { Battle } from './schemas/battle.schema';
 import {
   CreateBattleParams,
@@ -8,27 +6,21 @@ import {
   FindBattlesParams,
   RemoveBattleParams,
 } from './battles.types';
+import { BattlesRepository } from './repository/battles.repository';
 
 @Injectable()
 export class BattlesService {
-  constructor(
-    @InjectModel(Battle.name)
-    private readonly battleModel: Model<Battle>,
-  ) {}
+  constructor(private readonly battlesRepository: BattlesRepository) {}
 
   async create(params: CreateBattleParams): Promise<Battle> {
     try {
-      const created = await this.battleModel.create({
+      return await this.battlesRepository.create({
         ownerId: params.ownerId,
         squadId: params.squadId,
-        enemy: {
-          type: params.enemy.type,
-          power: params.enemy.power,
-        },
+        enemy: params.enemy,
         log: params.log,
         result: params.result,
       });
-      return created;
     } catch (err: any) {
       const code = (err as { code?: number })?.code;
       if (code === 11000) {
@@ -39,22 +31,21 @@ export class BattlesService {
   }
 
   async findAll(params: FindBattlesParams): Promise<Battle[]> {
-    return this.battleModel
-      .find({ ownerId: params.ownerId })
-      .sort({ createdAt: -1 })
-      .exec();
+    return this.battlesRepository.findAllByOwner({ ownerId: params.ownerId });
   }
 
   async findById(params: FindBattleByIdParams): Promise<Battle | null> {
-    return this.battleModel
-      .findOne({ _id: params.id, ownerId: params.ownerId })
-      .exec();
+    return this.battlesRepository.findByIdAndOwner({
+      id: params.id,
+      ownerId: params.ownerId,
+    });
   }
 
   async remove(params: RemoveBattleParams): Promise<boolean> {
-    const res = await this.battleModel
-      .deleteOne({ _id: params.id, ownerId: params.ownerId })
-      .exec();
+    const res = await this.battlesRepository.removeByIdAndOwner({
+      id: params.id,
+      ownerId: params.ownerId,
+    });
     return (res.deletedCount ?? 0) > 0;
   }
 }

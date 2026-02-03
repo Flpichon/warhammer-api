@@ -57,4 +57,17 @@ export class SquadsController {
   remove(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     return this.squadsService.remove({ ownerId: user.sub, id });
   }
+
+  @Post(':id/marines/:marineId')
+  assignMarine(
+    @Param('id') id: string,
+    @Param('marineId') marineId: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.squadsService.assignMarine({
+      ownerId: user.sub,
+      squadId: id,
+      marineId,
+    });
+  }
 }

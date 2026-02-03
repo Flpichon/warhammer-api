@@ -24,3 +24,9 @@ export type RemoveSquadParams = {
   ownerId: string;
   id: string;
 };
+
+export type AssignMarineParams = {
+  ownerId: string;
+  squadId: string;
+  marineId: string;
+};

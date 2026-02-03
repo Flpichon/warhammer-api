@@ -1,28 +1,24 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from './schemas/user.schema';
 import {
   CreateUserParams,
   FindUserByEmailParams,
+  FindUserByIdParams,
   UserAuth,
   UserResponse,
 } from './users.types';
 import { toUserAuth, toUserResponse } from './users.mapper';
+import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectModel(User.name)
-    private readonly userModel: Model<UserDocument>,
-  ) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async createForAuth(
     params: CreateUserParams,
   ): Promise<{ auth: UserAuth; user: UserResponse }> {
     const email = params.email.trim().toLowerCase();
     try {
-      const created = await this.userModel.create({
+      const created = await this.usersRepository.create({
         email,
         passwordHash: params.passwordHash,
       });
@@ -39,10 +35,13 @@ export class UsersService {
     params: FindUserByEmailParams,
   ): Promise<{ auth: UserAuth; user: UserResponse } | null> {
     const email = params.email.trim().toLowerCase();
-    const doc = await this.userModel
-      .findOne({ email })
-      .select('+passwordHash')
-      .exec();
+    const doc = await this.usersRepository.findForAuthByEmail({ email });
     return doc ? { auth: toUserAuth(doc), user: toUserResponse(doc) } : null;
+  }
+  async findPublicById(
+    params: FindUserByIdParams,
+  ): Promise<UserResponse | null> {
+    const doc = await this.usersRepository.findById({ id: params.id });
+    return doc ? toUserResponse(doc) : null;
   }
 }

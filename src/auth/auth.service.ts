@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/user.service';
 import type { AuthTokenResponse, JwtPayload } from './auth.types';
+import { UserResponse } from '../users/users.types';
 
 export interface IAuthResponse extends JwtPayload {
   accessToken: string;
@@ -59,5 +60,13 @@ export class AuthService {
 
     const accessToken = await this.jwtService.signAsync(payload);
     return { accessToken, user: found.user };
+  }
+
+  async me(userId: string): Promise<{ user: UserResponse }> {
+    const user = await this.usersService.findPublicById({ id: userId });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return { user };
   }
 }
