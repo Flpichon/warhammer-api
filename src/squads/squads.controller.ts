@@ -25,7 +25,6 @@ export class SquadsController {
     return this.squadsService.create({
       ownerId: user.sub,
       name: dto.name,
-      chapter: dto.chapter,
     });
   }
 
@@ -49,7 +48,6 @@ export class SquadsController {
       ownerId: user.sub,
       id,
       name: dto.name,
-      chapter: dto.chapter,
     });
   }
 

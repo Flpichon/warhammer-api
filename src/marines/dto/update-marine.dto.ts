@@ -27,6 +27,12 @@ export class UpdateMarineDto {
   squadId?: string;
 
   @IsOptional()
+  @IsString()
+  @MinLength(1)
+  @Trim()
+  chapter?: string;
+
+  @IsOptional()
   @ValidateNested()
   @Type(() => MarineStatsDto)
   stats?: MarineStatsDto;

@@ -26,6 +26,7 @@ export class MarinesController {
       ownerId: user.sub,
       name: dto.name,
       rank: dto.rank,
+      chapter: dto.chapter,
       stats: dto.stats,
       squadId: dto.squadId,
     });
@@ -50,6 +51,7 @@ export class MarinesController {
       name: dto.name,
       rank: dto.rank,
       squadId: dto.squadId,
+      chapter: dto.chapter,
       stats: dto.stats,
     });
   }

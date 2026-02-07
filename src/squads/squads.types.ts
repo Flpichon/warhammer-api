@@ -1,6 +1,5 @@
 export type CreateSquadParams = {
   name: string;
-  chapter: string;
   ownerId: string;
 };
 
@@ -17,7 +16,6 @@ export type UpdateSquadParams = {
   ownerId: string;
   id: string;
   name?: string;
-  chapter?: string;
 };
 
 export type RemoveSquadParams = {

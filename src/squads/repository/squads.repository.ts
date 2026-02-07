@@ -2,9 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import type { DeleteResult, Model } from 'mongoose';
 
-import type { AssignMarineParams } from '../squads.types';
 import { Squad, SquadDocument } from '../schemas/squad.schema';
-import type { UpdateSquadPatch } from './squads.repository.types';
+import type {
+  AddMarineToSquadParams,
+  CreateSquadRepoParams,
+  ExistsSquadByIdAndOwnerParams,
+  FindSquadByIdAndOwnerParams,
+  FindSquadsByOwnerParams,
+  RemoveSquadByIdAndOwnerParams,
+  UpdateSquadByIdAndOwnerParams,
+} from './squads.repository.types';
 
 @Injectable()
 export class SquadsRepository {
@@ -13,23 +20,22 @@ export class SquadsRepository {
     private readonly squadModel: Model<SquadDocument>,
   ) {}
 
-  create(params: { ownerId: string; name: string; chapter: string }) {
+  create(params: CreateSquadRepoParams) {
     return this.squadModel.create({
       ownerId: params.ownerId,
       name: params.name,
-      chapter: params.chapter,
     });
   }
 
-  findAllByOwner(params: { ownerId: string }) {
+  findAllByOwner(params: FindSquadsByOwnerParams) {
     return this.squadModel.find({ ownerId: params.ownerId }).exec();
   }
 
-  existsByIdAndOwner(params: { id: string; ownerId: string }) {
+  existsByIdAndOwner(params: ExistsSquadByIdAndOwnerParams) {
     return this.squadModel.exists({ _id: params.id, ownerId: params.ownerId });
   }
 
-  addMarineId(params: AssignMarineParams) {
+  addMarineId(params: AddMarineToSquadParams) {
     return this.squadModel.updateOne(
       { _id: params.squadId, ownerId: params.ownerId },
       { $addToSet: { marineIds: params.marineId } },
@@ -37,17 +43,13 @@ export class SquadsRepository {
     );
   }
 
-  findByIdAndOwner(params: { id: string; ownerId: string }) {
+  findByIdAndOwner(params: FindSquadByIdAndOwnerParams) {
     return this.squadModel
       .findOne({ _id: params.id, ownerId: params.ownerId })
       .exec();
   }
 
-  updateByIdAndOwner(params: {
-    id: string;
-    ownerId: string;
-    update: UpdateSquadPatch;
-  }) {
+  updateByIdAndOwner(params: UpdateSquadByIdAndOwnerParams) {
     return this.squadModel
       .findOneAndUpdate(
         { _id: params.id, ownerId: params.ownerId },
@@ -57,10 +59,9 @@ export class SquadsRepository {
       .exec();
   }
 
-  removeByIdAndOwner(params: {
-    id: string;
-    ownerId: string;
-  }): Promise<DeleteResult> {
+  removeByIdAndOwner(
+    params: RemoveSquadByIdAndOwnerParams,
+  ): Promise<DeleteResult> {
     return this.squadModel
       .deleteOne({ _id: params.id, ownerId: params.ownerId })
       .exec();

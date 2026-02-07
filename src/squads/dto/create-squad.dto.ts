@@ -6,9 +6,4 @@ export class CreateSquadDto {
   @MinLength(1)
   @Trim()
   declare name: string;
-
-  @IsString()
-  @MinLength(1)
-  @Trim()
-  declare chapter: string;
 }

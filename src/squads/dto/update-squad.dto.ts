@@ -7,10 +7,4 @@ export class UpdateSquadDto {
   @MinLength(1)
   @Trim()
   name?: string;
-
-  @IsOptional()
-  @IsString()
-  @MinLength(1)
-  @Trim()
-  chapter?: string;
 }

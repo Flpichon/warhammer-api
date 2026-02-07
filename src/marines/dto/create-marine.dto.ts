@@ -24,6 +24,11 @@ export class CreateMarineDto {
   @IsString()
   squadId?: string;
 
+  @IsString()
+  @MinLength(1)
+  @Trim()
+  declare chapter: string;
+
   @IsDefined()
   @ValidateNested()
   @Type(() => MarineStatsDto)

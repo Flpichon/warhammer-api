@@ -9,6 +9,7 @@ export type CreateMarineParams = {
   name: string;
   rank: string;
   stats: MarineStats;
+  chapter: string;
   squadId?: string;
 };
 
@@ -19,6 +20,7 @@ export type FindMarineByIdParams = {
 
 export type FindMarinesParams = {
   ownerId: string;
+  chapter?: string;
   rank?: string;
   squadId?: string;
 };
@@ -30,6 +32,7 @@ export type UpdateMarineParams = {
   rank?: string;
   stats?: MarineStats;
   squadId?: string;
+  chapter?: string;
 };
 
 export type RemoveMarineParams = {

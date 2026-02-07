@@ -8,7 +8,7 @@ import {
   UpdateMarineParams,
 } from './marines.types';
 import { MarinesRepository } from './repository/marines.repository';
-import type { UpdateMarinePatch } from './marines.update.types';
+import type { UpdateMarinePatch } from './repository/marines.repository.types';
 
 @Injectable()
 export class MarinesService {
@@ -17,12 +17,11 @@ export class MarinesService {
   async create(params: CreateMarineParams): Promise<Marine> {
     try {
       return await this.marinesRepository.create({
-        ownerId: params.ownerId,
+        ...params,
         name: params.name.trim(),
         rank: params.rank.trim(),
+        chapter: params.chapter.trim(),
         wargear: [],
-        stats: params.stats,
-        squadId: params.squadId,
       });
     } catch (err: any) {
       const code = (err as { code?: number })?.code;
@@ -59,6 +58,9 @@ export class MarinesService {
     }
     if (params.squadId !== undefined) {
       update.squadId = params.squadId;
+    }
+    if (params.chapter !== undefined) {
+      update.chapter = params.chapter.trim();
     }
     if (params.stats !== undefined) {
       update.stats = {

@@ -3,7 +3,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import type { DeleteResult, Model, UpdateResult } from 'mongoose';
 
 import { Marine, MarineDocument } from '../schemas/marine.schema';
-import type { UpdateMarinePatch } from '../marines.update.types';
+import type {
+  AssignMarineToSquadParams,
+  CreateMarineRepoParams,
+  FindMarineByIdAndOwnerParams,
+  FindMarineSquadIdParams,
+  FindMarinesByOwnerParams,
+  RemoveMarineByIdAndOwnerParams,
+  UnsetMarineSquadParams,
+  UpdateMarineByIdAndOwnerParams,
+} from './marines.repository.types';
 
 @Injectable()
 export class MarinesRepository {
@@ -12,19 +21,13 @@ export class MarinesRepository {
     private readonly marineModel: Model<MarineDocument>,
   ) {}
 
-  create(params: {
-    ownerId: string;
-    name: string;
-    rank: string;
-    wargear: string[];
-    stats: { hp: number; atk: number; def: number };
-    squadId?: string;
-  }) {
+  create(params: CreateMarineRepoParams) {
     return this.marineModel.create({
       ownerId: params.ownerId,
       name: params.name,
       rank: params.rank,
       wargear: params.wargear,
+      chapter: params.chapter,
       stats: {
         hp: params.stats.hp,
         atk: params.stats.atk,
@@ -34,7 +37,7 @@ export class MarinesRepository {
     });
   }
 
-  findAllByOwner(params: { ownerId: string; rank?: string; squadId?: string }) {
+  findAllByOwner(params: FindMarinesByOwnerParams) {
     const filter: Record<string, unknown> = { ownerId: params.ownerId };
     if (params.rank) {
       filter.rank = params.rank;
@@ -46,11 +49,7 @@ export class MarinesRepository {
     return this.marineModel.find(filter).exec();
   }
 
-  updateByIdAndOwner(params: {
-    id: string;
-    ownerId: string;
-    update: UpdateMarinePatch;
-  }) {
+  updateByIdAndOwner(params: UpdateMarineByIdAndOwnerParams) {
     return this.marineModel
       .findOneAndUpdate(
         { _id: params.id, ownerId: params.ownerId },
@@ -60,20 +59,17 @@ export class MarinesRepository {
       .exec();
   }
 
-  removeByIdAndOwner(params: {
-    id: string;
-    ownerId: string;
-  }): Promise<DeleteResult> {
+  removeByIdAndOwner(
+    params: RemoveMarineByIdAndOwnerParams,
+  ): Promise<DeleteResult> {
     return this.marineModel
       .deleteOne({ _id: params.id, ownerId: params.ownerId })
       .exec();
   }
 
-  assignToSquadIfUnassignedOrSameSquad(params: {
-    ownerId: string;
-    marineId: string;
-    squadId: string;
-  }): Promise<UpdateResult> {
+  assignToSquadIfUnassignedOrSameSquad(
+    params: AssignMarineToSquadParams,
+  ): Promise<UpdateResult> {
     return this.marineModel.updateOne(
       {
         _id: params.marineId,
@@ -89,20 +85,20 @@ export class MarinesRepository {
     );
   }
 
-  findSquadIdByIdAndOwner(params: { id: string; ownerId: string }) {
+  findSquadIdByIdAndOwner(params: FindMarineSquadIdParams) {
     return this.marineModel
       .findOne({ _id: params.id, ownerId: params.ownerId })
       .select('squadId')
       .exec();
   }
 
-  findByIdAndOwner(params: { id: string; ownerId: string }) {
+  findByIdAndOwner(params: FindMarineByIdAndOwnerParams) {
     return this.marineModel
       .findOne({ _id: params.id, ownerId: params.ownerId })
       .exec();
   }
 
-  unsetSquadId(params: { ownerId: string; marineId: string; squadId: string }) {
+  unsetSquadId(params: UnsetMarineSquadParams) {
     return this.marineModel.updateOne(
       {
         _id: params.marineId,

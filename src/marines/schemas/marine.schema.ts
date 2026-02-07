@@ -21,6 +21,8 @@ export class Marine {
   declare rank: string; // tu pourras en faire un enum côté DTO (MEMO @FLP)
   @Prop({ type: [String], default: [] })
   declare wargear: string[];
+  @Prop({ required: true, trim: true })
+  declare chapter: string;
   @Prop({ type: MarineStatsSchema, required: true })
   declare stats: MarineStats;
   @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })

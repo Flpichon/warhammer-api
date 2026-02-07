@@ -6,8 +6,6 @@ export type SquadDocument = HydratedDocument<Squad>; // Mongoose Document type (
 export class Squad {
   @Prop({ required: true, trim: true })
   declare name: string;
-  @Prop({ required: true, trim: true })
-  declare chapter: string;
   @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
   declare ownerId: Types.ObjectId;
   @Prop({ type: [Types.ObjectId], ref: 'Marine', default: [] })

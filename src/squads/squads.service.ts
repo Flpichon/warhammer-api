@@ -28,7 +28,6 @@ export class SquadsService {
       const created = await this.squadsRepository.create({
         ownerId: params.ownerId,
         name: params.name.trim(),
-        chapter: params.chapter.trim(),
       });
       return created;
     } catch (err: any) {
@@ -56,9 +55,6 @@ export class SquadsService {
 
     if (params.name !== undefined) {
       update.name = params.name.trim();
-    }
-    if (params.chapter !== undefined) {
-      update.chapter = params.chapter.trim();
     }
 
     if (Object.keys(update).length === 0) {

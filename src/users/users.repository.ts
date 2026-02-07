@@ -3,6 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import type { Model } from 'mongoose';
 
 import { User, UserDocument } from './schemas/user.schema';
+import type {
+  CreateUserRepoParams,
+  FindUserByEmailRepoParams,
+  FindUserByIdRepoParams,
+} from './users.repository.types';
 
 @Injectable()
 export class UsersRepository {
@@ -11,21 +16,21 @@ export class UsersRepository {
     private readonly userModel: Model<UserDocument>,
   ) {}
 
-  create(params: { email: string; passwordHash: string }) {
+  create(params: CreateUserRepoParams) {
     return this.userModel.create({
       email: params.email,
       passwordHash: params.passwordHash,
     });
   }
 
-  findForAuthByEmail(params: { email: string }) {
+  findForAuthByEmail(params: FindUserByEmailRepoParams) {
     return this.userModel
       .findOne({ email: params.email })
       .select('+passwordHash')
       .exec();
   }
 
-  findById(params: { id: string }) {
+  findById(params: FindUserByIdRepoParams) {
     return this.userModel.findById(params.id).exec();
   }
 }
