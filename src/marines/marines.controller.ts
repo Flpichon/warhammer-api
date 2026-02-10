@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { MarinesService } from './marines.service';
@@ -14,6 +15,7 @@ import { UpdateMarineDto } from './dto/update-marine.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { JwtPayload } from '../auth/auth.types';
+import { FindMarinesQueryDto } from './dto/find-marines.dto';
 
 @Controller('marines')
 @UseGuards(JwtAuthGuard)
@@ -29,11 +31,21 @@ export class MarinesController {
       chapter: dto.chapter,
       stats: dto.stats,
       squadId: dto.squadId,
+      wargear: dto.wargear,
     });
   }
   @Get()
-  findAll(@CurrentUser() user: JwtPayload) {
-    return this.marinesService.findAll({ ownerId: user.sub });
+  findAll(
+    @Query() query: FindMarinesQueryDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    const { rank, squadId, chapter } = query;
+    return this.marinesService.findAll({
+      ownerId: user.sub,
+      rank,
+      squadId,
+      chapter,
+    });
   }
   @Get(':id')
   findOne(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
@@ -53,6 +65,7 @@ export class MarinesController {
       squadId: dto.squadId,
       chapter: dto.chapter,
       stats: dto.stats,
+      wargear: dto.wargear,
     });
   }
   @Delete(':id')

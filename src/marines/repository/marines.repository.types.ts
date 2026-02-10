@@ -1,8 +1,10 @@
+import { Rank, Weapon } from '../marines.enums';
+
 export type CreateMarineRepoParams = {
   ownerId: string;
   name: string;
-  rank: string;
-  wargear: string[];
+  rank: Rank;
+  wargear: Weapon[];
   chapter: string;
   stats: { hp: number; atk: number; def: number };
   squadId?: string;
@@ -10,8 +12,9 @@ export type CreateMarineRepoParams = {
 
 export type FindMarinesByOwnerParams = {
   ownerId: string;
-  rank?: string;
+  rank?: Rank;
   squadId?: string;
+  chapter?: string;
 };
 
 export type FindMarineByIdAndOwnerParams = {
@@ -26,7 +29,7 @@ export type FindMarineSquadIdParams = {
 
 export type UpdateMarinePatch = {
   name?: string;
-  rank?: string;
+  rank?: Rank;
   squadId?: string;
   chapter?: string;
   stats?: {
@@ -34,6 +37,7 @@ export type UpdateMarinePatch = {
     atk: number;
     def: number;
   };
+  wargear?: Weapon[];
 };
 
 export type UpdateMarineByIdAndOwnerParams = {

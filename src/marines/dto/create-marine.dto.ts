@@ -1,6 +1,9 @@
-import { Type } from 'class-transformer';
+import { Transform, TransformFnParams, Type } from 'class-transformer';
 import {
+  ArrayUnique,
+  IsArray,
   IsDefined,
+  IsEnum,
   IsOptional,
   IsString,
   MinLength,
@@ -8,6 +11,7 @@ import {
 } from 'class-validator';
 import { Trim } from '../../common/dto/transforms';
 import { MarineStatsDto } from './marine-stats.dto';
+import { Rank, Weapon } from '../marines.enums';
 
 export class CreateMarineDto {
   @IsString()
@@ -15,10 +19,11 @@ export class CreateMarineDto {
   @Trim()
   declare name: string;
 
-  @IsString()
-  @MinLength(1)
-  @Trim()
-  declare rank: string;
+  @Transform(({ value }: TransformFnParams): unknown =>
+    typeof value === 'string' ? value.trim() : value,
+  )
+  @IsEnum(Rank)
+  declare rank: Rank;
 
   @IsOptional()
   @IsString()
@@ -33,4 +38,10 @@ export class CreateMarineDto {
   @ValidateNested()
   @Type(() => MarineStatsDto)
   declare stats: MarineStatsDto;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayUnique()
+  @IsEnum(Weapon, { each: true })
+  wargear?: Weapon[];
 }

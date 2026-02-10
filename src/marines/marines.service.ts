@@ -19,9 +19,9 @@ export class MarinesService {
       return await this.marinesRepository.create({
         ...params,
         name: params.name.trim(),
-        rank: params.rank.trim(),
+        rank: params.rank,
         chapter: params.chapter.trim(),
-        wargear: [],
+        wargear: params.wargear ?? [],
       });
     } catch (err: any) {
       const code = (err as { code?: number })?.code;
@@ -35,8 +35,9 @@ export class MarinesService {
   async findAll(params: FindMarinesParams): Promise<Marine[]> {
     return this.marinesRepository.findAllByOwner({
       ownerId: params.ownerId,
-      rank: params.rank?.trim(),
+      rank: params.rank,
       squadId: params.squadId,
+      chapter: params.chapter?.trim(),
     });
   }
 
@@ -54,7 +55,7 @@ export class MarinesService {
       update.name = params.name.trim();
     }
     if (params.rank !== undefined) {
-      update.rank = params.rank.trim();
+      update.rank = params.rank;
     }
     if (params.squadId !== undefined) {
       update.squadId = params.squadId;
@@ -68,6 +69,9 @@ export class MarinesService {
         atk: params.stats.atk,
         def: params.stats.def,
       };
+    }
+    if (params.wargear !== undefined) {
+      update.wargear = params.wargear;
     }
 
     if (Object.keys(update).length === 0) {

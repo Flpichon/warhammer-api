@@ -45,6 +45,9 @@ export class MarinesRepository {
     if (params.squadId) {
       filter.squadId = params.squadId;
     }
+    if (params.chapter) {
+      filter.chapter = params.chapter;
+    }
 
     return this.marineModel.find(filter).exec();
   }
