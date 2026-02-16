@@ -32,12 +32,19 @@ export class MarinesService {
     }
   }
 
-  async findAll(params: FindMarinesParams): Promise<Marine[]> {
+  async findAll(params: FindMarinesParams): Promise<{
+    items: Marine[];
+    page: number;
+    limit: number;
+    total: number;
+  }> {
     return this.marinesRepository.findAllByOwner({
       ownerId: params.ownerId,
       rank: params.rank,
       squadId: params.squadId,
       chapter: params.chapter?.trim(),
+      page: params.page ?? 1,
+      limit: params.limit ?? 25,
     });
   }
 

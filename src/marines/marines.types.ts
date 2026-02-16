@@ -26,6 +26,8 @@ export type FindMarinesParams = {
   chapter?: string;
   rank?: Rank;
   squadId?: string;
+  page?: number;
+  limit?: number;
 };
 
 export type UpdateMarineParams = {

@@ -39,12 +39,14 @@ export class MarinesController {
     @Query() query: FindMarinesQueryDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    const { rank, squadId, chapter } = query;
+    const { rank, squadId, chapter, page, limit } = query;
     return this.marinesService.findAll({
       ownerId: user.sub,
       rank,
       squadId,
       chapter,
+      page,
+      limit,
     });
   }
   @Get(':id')

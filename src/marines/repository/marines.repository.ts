@@ -21,7 +21,7 @@ export class MarinesRepository {
     private readonly marineModel: Model<MarineDocument>,
   ) {}
 
-  create(params: CreateMarineRepoParams) {
+  create(params: CreateMarineRepoParams): Promise<Marine> {
     return this.marineModel.create({
       ownerId: params.ownerId,
       name: params.name,
@@ -37,7 +37,12 @@ export class MarinesRepository {
     });
   }
 
-  findAllByOwner(params: FindMarinesByOwnerParams) {
+  findAllByOwner(params: FindMarinesByOwnerParams): Promise<{
+    items: Marine[];
+    page: number;
+    limit: number;
+    total: number;
+  }> {
     const filter: Record<string, unknown> = { ownerId: params.ownerId };
     if (params.rank) {
       filter.rank = params.rank;
@@ -48,11 +53,26 @@ export class MarinesRepository {
     if (params.chapter) {
       filter.chapter = params.chapter;
     }
+    const skip = (params.page - 1) * params.limit;
+    const itemsQuery = this.marineModel
+      .find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(params.limit)
+      .exec();
 
-    return this.marineModel.find(filter).exec();
+    const totalQuery = this.marineModel.countDocuments(filter).exec();
+    return Promise.all([itemsQuery, totalQuery]).then(([items, total]) => ({
+      items,
+      page: params.page,
+      limit: params.limit,
+      total,
+    }));
   }
 
-  updateByIdAndOwner(params: UpdateMarineByIdAndOwnerParams) {
+  updateByIdAndOwner(
+    params: UpdateMarineByIdAndOwnerParams,
+  ): Promise<Marine | null> {
     return this.marineModel
       .findOneAndUpdate(
         { _id: params.id, ownerId: params.ownerId },
@@ -88,20 +108,24 @@ export class MarinesRepository {
     );
   }
 
-  findSquadIdByIdAndOwner(params: FindMarineSquadIdParams) {
+  findSquadIdByIdAndOwner(
+    params: FindMarineSquadIdParams,
+  ): Promise<Marine | null> {
     return this.marineModel
       .findOne({ _id: params.id, ownerId: params.ownerId })
       .select('squadId')
       .exec();
   }
 
-  findByIdAndOwner(params: FindMarineByIdAndOwnerParams) {
+  findByIdAndOwner(
+    params: FindMarineByIdAndOwnerParams,
+  ): Promise<Marine | null> {
     return this.marineModel
       .findOne({ _id: params.id, ownerId: params.ownerId })
       .exec();
   }
 
-  unsetSquadId(params: UnsetMarineSquadParams) {
+  unsetSquadId(params: UnsetMarineSquadParams): Promise<UpdateResult> {
     return this.marineModel.updateOne(
       {
         _id: params.marineId,

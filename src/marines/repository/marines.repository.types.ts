@@ -15,6 +15,8 @@ export type FindMarinesByOwnerParams = {
   rank?: Rank;
   squadId?: string;
   chapter?: string;
+  page: number;
+  limit: number;
 };
 
 export type FindMarineByIdAndOwnerParams = {

@@ -1,10 +1,32 @@
-import { IsEnum, IsOptional, IsString, MinLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { Trim } from '../../common/dto/transforms';
 import { Rank } from '../marines.enums';
-import { TransformFnParams } from 'class-transformer/types/interfaces/metadata/transform-fn-params.interface';
-import { Transform } from 'class-transformer/types/decorators/transform.decorator';
+import { TransformFnParams } from 'class-transformer';
+import { Transform } from 'class-transformer';
 
 export class FindMarinesQueryDto {
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit?: number;
+
   @IsOptional()
   @Transform(({ value }: TransformFnParams): unknown =>
     typeof value === 'string' ? value.trim() : value,
