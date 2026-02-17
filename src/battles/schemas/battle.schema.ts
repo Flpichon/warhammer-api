@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 import { applyBaseSchemaTransforms } from '../../common/mongoose/schema.transforms';
 export type BattleDocument = HydratedDocument<Battle>;
 @Schema({ _id: false })
@@ -12,9 +12,19 @@ class BattleEnemy {
 const BattleEnemySchema = SchemaFactory.createForClass(BattleEnemy);
 @Schema({ timestamps: true })
 export class Battle {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    index: true,
+  })
   declare ownerId: Types.ObjectId;
-  @Prop({ type: Types.ObjectId, ref: 'Squad', required: true, index: true })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Squad',
+    required: true,
+    index: true,
+  })
   declare squadId: Types.ObjectId;
   @Prop({ type: BattleEnemySchema, required: true })
   declare enemy: BattleEnemy;

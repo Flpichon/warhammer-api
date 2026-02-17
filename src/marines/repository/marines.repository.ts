@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import type { DeleteResult, Model, UpdateResult } from 'mongoose';
+import { type DeleteResult, type Model, type UpdateResult } from 'mongoose';
 
 import { Marine, MarineDocument } from '../schemas/marine.schema';
 import type {

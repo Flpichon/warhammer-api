@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 import { applyBaseSchemaTransforms } from '../../common/mongoose/schema.transforms';
 export type MarineDocument = HydratedDocument<Marine>;
 @Schema({ _id: false })
@@ -25,9 +25,19 @@ export class Marine {
   declare chapter: string;
   @Prop({ type: MarineStatsSchema, required: true })
   declare stats: MarineStats;
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    index: true,
+  })
   declare ownerId: Types.ObjectId;
-  @Prop({ type: Types.ObjectId, ref: 'Squad', required: false, index: true })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Squad',
+    required: false,
+    index: true,
+  })
   declare squadId?: Types.ObjectId;
 }
 export const MarineSchema = SchemaFactory.createForClass(Marine);
