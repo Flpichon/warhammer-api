@@ -19,6 +19,12 @@ export type FindMarinesByOwnerParams = {
   limit: number;
 };
 
+export type FindDistinctChaptersParams = {
+  ownerId: string;
+  q?: string;
+  limit: number;
+};
+
 export type FindMarineByIdAndOwnerParams = {
   id: string;
   ownerId: string;

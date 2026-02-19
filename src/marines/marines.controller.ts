@@ -16,6 +16,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { JwtPayload } from '../auth/auth.types';
 import { FindMarinesQueryDto } from './dto/find-marines.dto';
+import { FindMarineChaptersQueryDto } from './dto/find-marine-chapters.dto';
 
 @Controller('marines')
 @UseGuards(JwtAuthGuard)
@@ -47,6 +48,18 @@ export class MarinesController {
       chapter,
       page,
       limit,
+    });
+  }
+
+  @Get('chapters')
+  findChapters(
+    @Query() query: FindMarineChaptersQueryDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.marinesService.findChapters({
+      ownerId: user.sub,
+      q: query.q,
+      limit: query.limit,
     });
   }
   @Get(':id')

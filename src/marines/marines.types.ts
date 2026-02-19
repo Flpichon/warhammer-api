@@ -30,6 +30,12 @@ export type FindMarinesParams = {
   limit?: number;
 };
 
+export type FindMarineChaptersParams = {
+  ownerId: string;
+  q?: string;
+  limit?: number;
+};
+
 export type UpdateMarineParams = {
   ownerId: string;
   id: string;

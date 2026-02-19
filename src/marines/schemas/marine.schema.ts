@@ -43,3 +43,4 @@ export class Marine {
 export const MarineSchema = SchemaFactory.createForClass(Marine);
 applyBaseSchemaTransforms(MarineSchema);
 MarineSchema.index({ ownerId: 1, rank: 1 });
+MarineSchema.index({ ownerId: 1, chapter: 1, name: 1 }, { unique: true });

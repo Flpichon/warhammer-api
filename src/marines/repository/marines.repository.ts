@@ -2,10 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { type DeleteResult, type Model, type UpdateResult } from 'mongoose';
 
+import { toObjectId } from '../../common/mongoose/objectid.utils';
 import { Marine, MarineDocument } from '../schemas/marine.schema';
 import type {
   AssignMarineToSquadParams,
   CreateMarineRepoParams,
+  FindDistinctChaptersParams,
   FindMarineByIdAndOwnerParams,
   FindMarineSquadIdParams,
   FindMarinesByOwnerParams,
@@ -68,6 +70,28 @@ export class MarinesRepository {
       limit: params.limit,
       total,
     }));
+  }
+
+  async findDistinctChapters(params: FindDistinctChaptersParams) {
+    const match: Record<string, unknown> = {
+      ownerId: toObjectId(params.ownerId),
+    };
+    if (params.q) {
+      match.chapter = { $regex: params.q, $options: 'i' };
+    }
+    console.log('findDistinctChapters match:', match);
+    const results = await this.marineModel
+      .aggregate([
+        { $match: match },
+        { $group: { _id: '$chapter' } },
+        { $sort: { _id: 1 } },
+        { $limit: params.limit },
+      ])
+      .exec();
+
+    return results
+      .map((row) => row?._id)
+      .filter((value): value is string => typeof value === 'string');
   }
 
   updateByIdAndOwner(

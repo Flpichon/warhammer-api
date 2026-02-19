@@ -3,6 +3,7 @@ import { Marine } from './schemas/marine.schema';
 import {
   CreateMarineParams,
   FindMarineByIdParams,
+  FindMarineChaptersParams,
   FindMarinesParams,
   RemoveMarineParams,
   UpdateMarineParams,
@@ -26,7 +27,9 @@ export class MarinesService {
     } catch (err: any) {
       const code = (err as { code?: number })?.code;
       if (code === 11000) {
-        throw new ConflictException('Marine already used');
+        throw new ConflictException(
+          'A marine with this name already exists in this chapter',
+        );
       }
       throw err;
     }
@@ -55,41 +58,59 @@ export class MarinesService {
     });
   }
 
-  async update(params: UpdateMarineParams): Promise<Marine | null> {
-    const update: UpdateMarinePatch = {};
-
-    if (params.name !== undefined) {
-      update.name = params.name.trim();
-    }
-    if (params.rank !== undefined) {
-      update.rank = params.rank;
-    }
-    if (params.squadId !== undefined) {
-      update.squadId = params.squadId;
-    }
-    if (params.chapter !== undefined) {
-      update.chapter = params.chapter.trim();
-    }
-    if (params.stats !== undefined) {
-      update.stats = {
-        hp: params.stats.hp,
-        atk: params.stats.atk,
-        def: params.stats.def,
-      };
-    }
-    if (params.wargear !== undefined) {
-      update.wargear = params.wargear;
-    }
-
-    if (Object.keys(update).length === 0) {
-      return this.findById({ ownerId: params.ownerId, id: params.id });
-    }
-
-    return this.marinesRepository.updateByIdAndOwner({
-      id: params.id,
+  async findChapters(params: FindMarineChaptersParams): Promise<string[]> {
+    return this.marinesRepository.findDistinctChapters({
       ownerId: params.ownerId,
-      update,
+      q: params.q?.trim() || undefined,
+      limit: params.limit ?? 10,
     });
+  }
+
+  async update(params: UpdateMarineParams): Promise<Marine | null> {
+    try {
+      const update: UpdateMarinePatch = {};
+
+      if (params.name !== undefined) {
+        update.name = params.name.trim();
+      }
+      if (params.rank !== undefined) {
+        update.rank = params.rank;
+      }
+      if (params.squadId !== undefined) {
+        update.squadId = params.squadId;
+      }
+      if (params.chapter !== undefined) {
+        update.chapter = params.chapter.trim();
+      }
+      if (params.stats !== undefined) {
+        update.stats = {
+          hp: params.stats.hp,
+          atk: params.stats.atk,
+          def: params.stats.def,
+        };
+      }
+      if (params.wargear !== undefined) {
+        update.wargear = params.wargear;
+      }
+
+      if (Object.keys(update).length === 0) {
+        return this.findById({ ownerId: params.ownerId, id: params.id });
+      }
+
+      return this.marinesRepository.updateByIdAndOwner({
+        id: params.id,
+        ownerId: params.ownerId,
+        update,
+      });
+    } catch (err: any) {
+      const code = (err as { code?: number })?.code;
+      if (code === 11000) {
+        throw new ConflictException(
+          'A marine with this name already exists in this chapter',
+        );
+      }
+      throw err;
+    }
   }
 
   async remove(params: RemoveMarineParams): Promise<boolean> {
