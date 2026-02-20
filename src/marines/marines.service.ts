@@ -3,7 +3,6 @@ import { Marine } from './schemas/marine.schema';
 import {
   CreateMarineParams,
   FindMarineByIdParams,
-  FindMarineChaptersParams,
   FindMarinesParams,
   RemoveMarineParams,
   UpdateMarineParams,
@@ -21,7 +20,7 @@ export class MarinesService {
         ...params,
         name: params.name.trim(),
         rank: params.rank,
-        chapter: params.chapter.trim(),
+        chapterId: params.chapterId ?? null,
         wargear: params.wargear ?? [],
       });
     } catch (err: any) {
@@ -45,7 +44,7 @@ export class MarinesService {
       ownerId: params.ownerId,
       rank: params.rank,
       squadId: params.squadId,
-      chapter: params.chapter?.trim(),
+      chapterId: params.chapterId,
       page: params.page ?? 1,
       limit: params.limit ?? 25,
     });
@@ -55,14 +54,6 @@ export class MarinesService {
     return this.marinesRepository.findByIdAndOwner({
       id: params.id,
       ownerId: params.ownerId,
-    });
-  }
-
-  async findChapters(params: FindMarineChaptersParams): Promise<string[]> {
-    return this.marinesRepository.findDistinctChapters({
-      ownerId: params.ownerId,
-      q: params.q?.trim() || undefined,
-      limit: params.limit ?? 10,
     });
   }
 
@@ -79,8 +70,8 @@ export class MarinesService {
       if (params.squadId !== undefined) {
         update.squadId = params.squadId;
       }
-      if (params.chapter !== undefined) {
-        update.chapter = params.chapter.trim();
+      if (params.chapterId !== undefined) {
+        update.chapterId = params.chapterId;
       }
       if (params.stats !== undefined) {
         update.stats = {

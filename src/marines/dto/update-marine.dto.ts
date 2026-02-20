@@ -34,13 +34,13 @@ export class UpdateMarineDto {
   @IsOptional()
   @IsString()
   @MinLength(1)
-  @Trim()
-  chapter?: string;
+  chapterId?: string | null;
 
   @IsOptional()
   @ValidateNested()
   @Type(() => MarineStatsDto)
   stats?: MarineStatsDto;
+
   @IsOptional()
   @IsArray()
   @ArrayUnique()

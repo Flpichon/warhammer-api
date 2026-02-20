@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -66,6 +68,28 @@ export class SquadsController {
       ownerId: user.sub,
       squadId: id,
       marineId,
+    });
+  }
+
+  @Patch(':id/leader/:marineId')
+  setLeader(
+    @Param('id') id: string,
+    @Param('marineId') marineId: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.squadsService.setLeader({
+      ownerId: user.sub,
+      squadId: id,
+      marineId,
+    });
+  }
+
+  @Delete(':id/leader')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  unsetLeader(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.squadsService.unsetLeader({
+      ownerId: user.sub,
+      squadId: id,
     });
   }
 }

@@ -8,7 +8,6 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
-import { Trim } from '../../common/dto/transforms';
 import { Rank } from '../marines.enums';
 import { TransformFnParams } from 'class-transformer';
 import { Transform } from 'class-transformer';
@@ -33,14 +32,14 @@ export class FindMarinesQueryDto {
   )
   @IsEnum(Rank)
   rank?: Rank;
+
   @IsOptional()
   @IsString()
   @MinLength(1)
-  @Trim()
   squadId?: string;
+
   @IsOptional()
   @IsString()
   @MinLength(1)
-  @Trim()
-  chapter?: string;
+  chapterId?: string;
 }

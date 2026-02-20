@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import type { DeleteResult, Model } from 'mongoose';
 
+import { toObjectId } from '../../common/mongoose/objectid.utils';
 import { Squad, SquadDocument } from '../schemas/squad.schema';
 import type {
   AddMarineToSquadParams,
@@ -64,6 +65,26 @@ export class SquadsRepository {
   ): Promise<DeleteResult> {
     return this.squadModel
       .deleteOne({ _id: params.id, ownerId: params.ownerId })
+      .exec();
+  }
+
+  setLeader(squadId: string, ownerId: string, leaderId: string) {
+    return this.squadModel
+      .findOneAndUpdate(
+        { _id: squadId, ownerId },
+        { $set: { leaderId: toObjectId(leaderId) } },
+        { new: true, runValidators: true },
+      )
+      .exec();
+  }
+
+  unsetLeader(squadId: string, ownerId: string) {
+    return this.squadModel
+      .findOneAndUpdate(
+        { _id: squadId, ownerId },
+        { $set: { leaderId: null } },
+        { new: true },
+      )
       .exec();
   }
 }

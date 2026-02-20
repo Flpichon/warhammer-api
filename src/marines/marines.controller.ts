@@ -16,7 +16,6 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import type { JwtPayload } from '../auth/auth.types';
 import { FindMarinesQueryDto } from './dto/find-marines.dto';
-import { FindMarineChaptersQueryDto } from './dto/find-marine-chapters.dto';
 
 @Controller('marines')
 @UseGuards(JwtAuthGuard)
@@ -29,43 +28,34 @@ export class MarinesController {
       ownerId: user.sub,
       name: dto.name,
       rank: dto.rank,
-      chapter: dto.chapter,
+      chapterId: dto.chapterId ?? null,
       stats: dto.stats,
       squadId: dto.squadId,
       wargear: dto.wargear,
     });
   }
+
   @Get()
   findAll(
     @Query() query: FindMarinesQueryDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    const { rank, squadId, chapter, page, limit } = query;
+    const { rank, squadId, chapterId, page, limit } = query;
     return this.marinesService.findAll({
       ownerId: user.sub,
       rank,
       squadId,
-      chapter,
+      chapterId,
       page,
       limit,
     });
   }
 
-  @Get('chapters')
-  findChapters(
-    @Query() query: FindMarineChaptersQueryDto,
-    @CurrentUser() user: JwtPayload,
-  ) {
-    return this.marinesService.findChapters({
-      ownerId: user.sub,
-      q: query.q,
-      limit: query.limit,
-    });
-  }
   @Get(':id')
   findOne(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     return this.marinesService.findById({ id, ownerId: user.sub });
   }
+
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -78,11 +68,12 @@ export class MarinesController {
       name: dto.name,
       rank: dto.rank,
       squadId: dto.squadId,
-      chapter: dto.chapter,
+      chapterId: dto.chapterId,
       stats: dto.stats,
       wargear: dto.wargear,
     });
   }
+
   @Delete(':id')
   remove(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     return this.marinesService.remove({ ownerId: user.sub, id });

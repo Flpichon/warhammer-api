@@ -28,3 +28,14 @@ export type AssignMarineParams = {
   squadId: string;
   marineId: string;
 };
+
+export type SetSquadLeaderParams = {
+  ownerId: string;
+  squadId: string;
+  marineId: string;
+};
+
+export type UnsetSquadLeaderParams = {
+  ownerId: string;
+  squadId: string;
+};

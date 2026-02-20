@@ -21,8 +21,14 @@ export class Marine {
   declare rank: string; // tu pourras en faire un enum côté DTO (MEMO @FLP)
   @Prop({ type: [String], default: [] })
   declare wargear: string[];
-  @Prop({ required: true, trim: true })
-  declare chapter: string;
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Chapter',
+    required: false,
+    default: null,
+    index: true,
+  })
+  declare chapterId: Types.ObjectId | null;
   @Prop({ type: MarineStatsSchema, required: true })
   declare stats: MarineStats;
   @Prop({
@@ -43,4 +49,4 @@ export class Marine {
 export const MarineSchema = SchemaFactory.createForClass(Marine);
 applyBaseSchemaTransforms(MarineSchema);
 MarineSchema.index({ ownerId: 1, rank: 1 });
-MarineSchema.index({ ownerId: 1, chapter: 1, name: 1 }, { unique: true });
+MarineSchema.index({ ownerId: 1, chapterId: 1, name: 1 }, { unique: true });

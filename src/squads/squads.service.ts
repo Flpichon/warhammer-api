@@ -13,6 +13,8 @@ import {
   FindSquadByIdParams,
   FindSquadsParams,
   RemoveSquadParams,
+  SetSquadLeaderParams,
+  UnsetSquadLeaderParams,
   UpdateSquadParams,
 } from './squads.types';
 import type { UpdateSquadPatch } from './repository/squads.repository.types';
@@ -141,5 +143,37 @@ export class SquadsService {
     }
 
     return { squad, marine };
+  }
+
+  async setLeader(params: SetSquadLeaderParams): Promise<Squad> {
+    // Verify the marine exists and belongs to this owner
+    const marine = await this.marinesRepository.findByIdAndOwner({
+      id: params.marineId,
+      ownerId: params.ownerId,
+    });
+    if (!marine) {
+      throw new NotFoundException('Marine not found');
+    }
+
+    const updated = await this.squadsRepository.setLeader(
+      params.squadId,
+      params.ownerId,
+      params.marineId,
+    );
+    if (!updated) {
+      throw new NotFoundException('Squad not found');
+    }
+    return updated;
+  }
+
+  async unsetLeader(params: UnsetSquadLeaderParams): Promise<Squad> {
+    const updated = await this.squadsRepository.unsetLeader(
+      params.squadId,
+      params.ownerId,
+    );
+    if (!updated) {
+      throw new NotFoundException('Squad not found');
+    }
+    return updated;
   }
 }

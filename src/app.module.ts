@@ -8,6 +8,7 @@ import { SquadsModule } from './squads/squads.module';
 import { MarinesModule } from './marines/marines.module';
 import { BattlesModule } from './battles/battles.module';
 import { AuthModule } from './auth/auth.module';
+import { ChaptersModule } from './chapters/chapters.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from './auth/auth.module';
     SquadsModule,
     MarinesModule,
     BattlesModule,
+    ChaptersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

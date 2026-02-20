@@ -5,7 +5,7 @@ export type CreateMarineRepoParams = {
   name: string;
   rank: Rank;
   wargear: Weapon[];
-  chapter: string;
+  chapterId?: string | null;
   stats: { hp: number; atk: number; def: number };
   squadId?: string;
 };
@@ -14,14 +14,8 @@ export type FindMarinesByOwnerParams = {
   ownerId: string;
   rank?: Rank;
   squadId?: string;
-  chapter?: string;
+  chapterId?: string;
   page: number;
-  limit: number;
-};
-
-export type FindDistinctChaptersParams = {
-  ownerId: string;
-  q?: string;
   limit: number;
 };
 
@@ -39,7 +33,7 @@ export type UpdateMarinePatch = {
   name?: string;
   rank?: Rank;
   squadId?: string;
-  chapter?: string;
+  chapterId?: string | null;
   stats?: {
     hp: number;
     atk: number;
@@ -69,4 +63,9 @@ export type UnsetMarineSquadParams = {
   ownerId: string;
   marineId: string;
   squadId: string;
+};
+
+export type CountMarinesByChapterIdParams = {
+  chapterId: string;
+  ownerId: string;
 };

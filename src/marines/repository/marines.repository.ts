@@ -6,8 +6,8 @@ import { toObjectId } from '../../common/mongoose/objectid.utils';
 import { Marine, MarineDocument } from '../schemas/marine.schema';
 import type {
   AssignMarineToSquadParams,
+  CountMarinesByChapterIdParams,
   CreateMarineRepoParams,
-  FindDistinctChaptersParams,
   FindMarineByIdAndOwnerParams,
   FindMarineSquadIdParams,
   FindMarinesByOwnerParams,
@@ -29,7 +29,7 @@ export class MarinesRepository {
       name: params.name,
       rank: params.rank,
       wargear: params.wargear,
-      chapter: params.chapter,
+      chapterId: params.chapterId ?? null,
       stats: {
         hp: params.stats.hp,
         atk: params.stats.atk,
@@ -52,8 +52,8 @@ export class MarinesRepository {
     if (params.squadId) {
       filter.squadId = params.squadId;
     }
-    if (params.chapter) {
-      filter.chapter = params.chapter;
+    if (params.chapterId) {
+      filter.chapterId = toObjectId(params.chapterId);
     }
     const skip = (params.page - 1) * params.limit;
     const itemsQuery = this.marineModel
@@ -70,28 +70,6 @@ export class MarinesRepository {
       limit: params.limit,
       total,
     }));
-  }
-
-  async findDistinctChapters(params: FindDistinctChaptersParams) {
-    const match: Record<string, unknown> = {
-      ownerId: toObjectId(params.ownerId),
-    };
-    if (params.q) {
-      match.chapter = { $regex: params.q, $options: 'i' };
-    }
-    console.log('findDistinctChapters match:', match);
-    const results = await this.marineModel
-      .aggregate([
-        { $match: match },
-        { $group: { _id: '$chapter' } },
-        { $sort: { _id: 1 } },
-        { $limit: params.limit },
-      ])
-      .exec();
-
-    return results
-      .map((row) => row?._id)
-      .filter((value): value is string => typeof value === 'string');
   }
 
   updateByIdAndOwner(
@@ -158,5 +136,14 @@ export class MarinesRepository {
       },
       { $unset: { squadId: 1 } },
     );
+  }
+
+  countByChapterId(params: CountMarinesByChapterIdParams): Promise<number> {
+    return this.marineModel
+      .countDocuments({
+        chapterId: toObjectId(params.chapterId),
+        ownerId: toObjectId(params.ownerId),
+      })
+      .exec();
   }
 }

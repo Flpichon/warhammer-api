@@ -29,10 +29,10 @@ export class CreateMarineDto {
   @IsString()
   squadId?: string;
 
+  @IsOptional()
   @IsString()
   @MinLength(1)
-  @Trim()
-  declare chapter: string;
+  chapterId?: string;
 
   @IsDefined()
   @ValidateNested()

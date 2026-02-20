@@ -19,6 +19,7 @@ export type ExistsSquadByIdAndOwnerParams = {
 
 export type UpdateSquadPatch = {
   name?: string;
+  leaderId?: string | null;
 };
 
 export type UpdateSquadByIdAndOwnerParams = {

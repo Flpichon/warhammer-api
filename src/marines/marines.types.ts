@@ -11,7 +11,7 @@ export type CreateMarineParams = {
   name: string;
   rank: Rank;
   stats: MarineStats;
-  chapter: string;
+  chapterId?: string | null;
   squadId?: string;
   wargear?: Weapon[];
 };
@@ -23,16 +23,10 @@ export type FindMarineByIdParams = {
 
 export type FindMarinesParams = {
   ownerId: string;
-  chapter?: string;
+  chapterId?: string;
   rank?: Rank;
   squadId?: string;
   page?: number;
-  limit?: number;
-};
-
-export type FindMarineChaptersParams = {
-  ownerId: string;
-  q?: string;
   limit?: number;
 };
 
@@ -43,7 +37,7 @@ export type UpdateMarineParams = {
   rank?: Rank;
   stats?: MarineStats;
   squadId?: string;
-  chapter?: string;
+  chapterId?: string | null;
   wargear?: Weapon[];
 };
 

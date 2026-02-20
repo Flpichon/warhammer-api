@@ -1,11 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 import { applyBaseSchemaTransforms } from '../../common/mongoose/schema.transforms';
-export type SquadDocument = HydratedDocument<Squad>; // Mongoose Document type (MEMO @FLP)
-@Schema({ timestamps: true }) // updated at and created at (MEMO @FLP)
-export class Squad {
+
+export type ChapterDocument = HydratedDocument<Chapter>;
+
+@Schema({ timestamps: true })
+export class Chapter {
   @Prop({ required: true, trim: true })
   declare name: string;
+
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     ref: 'User',
@@ -13,17 +16,24 @@ export class Squad {
     index: true,
   })
   declare ownerId: Types.ObjectId;
-  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'Marine', default: [] })
-  declare marineIds: Types.ObjectId[];
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    ref: 'Marine',
+    ref: 'Chapter',
     required: false,
     default: null,
+    index: true,
   })
-  declare leaderId: Types.ObjectId | null;
+  declare parentId: Types.ObjectId | null;
+
+  // champs ajoutés par timestamps: true
+  declare createdAt: Date;
+  declare updatedAt: Date;
+
+  // virtual Mongoose (string de _id)
+  declare id: string;
 }
-export const SquadSchema = SchemaFactory.createForClass(Squad);
-applyBaseSchemaTransforms(SquadSchema);
-SquadSchema.index({ ownerId: 1, name: 1 });
+
+export const ChapterSchema = SchemaFactory.createForClass(Chapter);
+applyBaseSchemaTransforms(ChapterSchema);
+ChapterSchema.index({ ownerId: 1, name: 1 }, { unique: true });
